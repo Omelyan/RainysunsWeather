@@ -1,8 +1,11 @@
 import React from 'react';
 import {
   View,
-  Text,
 } from 'react-native';
+
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
+import { googleMapsAPIKey } from '../../assets/options';
 
 export default class WeatherScreen extends React.PureComponent {
   constructor(props) {
@@ -12,8 +15,18 @@ export default class WeatherScreen extends React.PureComponent {
 
   render() {
     return (
-      <View>
-        <Text>Weather screen.</Text>
+      <View style={{ flex: 1 }}>
+        <GooglePlacesAutocomplete
+          placeholder="Search..."
+          onPress={(data, details) => {
+            console.log(data, details);
+          }}
+          query={{
+            key: googleMapsAPIKey,
+            language: 'en',
+          }}
+          fetchDetails
+        />
       </View>
     );
   }
