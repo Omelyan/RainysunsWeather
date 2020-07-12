@@ -83,7 +83,7 @@ export default class ForecastView extends React.PureComponent {
     const dayOfTheMonth = date.getDate();
     const {
       Temperature: {
-        Minimum: { Value: minValue, Unit: unit } = {},
+        Minimum: { Value: minValue } = {},
         Maximum: { Value: maxValue } = {},
       } = {},
       Day: { IconPhrase: dayPhrase } = {},
@@ -107,12 +107,10 @@ export default class ForecastView extends React.PureComponent {
           <View style={styles.itemTemperatures}>
             {/* temperatures */}
             <Text style={styles.largeText} numberOfLines={1}>
-              {maxValue.toFixed()}
-              <Text style={{ color: theme.colors.primary.text.light }}> / </Text>
-              {minValue.toFixed()}
+              {`${maxValue.toFixed()}°`}
+              <Text style={{ color: theme.colors.primary.text.light }}>/</Text>
+              {`${minValue.toFixed()}°`}
             </Text>
-            {/* units */}
-            <Text style={styles.largerText}>{`°${unit}`}</Text>
           </View>
 
         </View>

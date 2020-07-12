@@ -4,42 +4,45 @@ export const accuweatherURL = 'https://dataservice.accuweather.com';
 export const accuweatherAPIKey = 'pTAn3UqACfg7Jea3gpQwrhaaV0YWw52b';
 
 export const defaultRegion = {
-  latitude: 40,
-  longitude: 30,
-  latitudeDelta: 20,
-  longitudeDelta: 20,
+  latitude: 50,
+  longitude: 31,
+  latitudeDelta: 15,
+  longitudeDelta: 15,
 };
 
 export const animationOptions = {
   duration: {
     default: 200,
+    long: 600,
   },
 };
 
 export const theme = {
   colors: {
-    lightTint: '#F2F0EB90',
-    pinColor: '#F25041',
     backgroundColor: 'white',
 
     primary: {
       default: '#F2F0EB',
       darker: '#E0DEDA',
+      lightTint: '#F2F0EB40',
       text: {
         default: '#222',
         dimmed: '#00000050',
         light: '#00000020',
-        accent1: '#05C7F2',
-        accent2: '#F25041',
+        accent1: '#1DBAF5',
       },
     },
 
     secondary: {
-      default: '#5196A6',
+      default: '#F2955E',
       text: {
         default: 'white',
         dimmed: '#ffffff90',
       },
+    },
+
+    accent: {
+      default: '#F25041',
     },
   },
 
@@ -63,7 +66,7 @@ export const theme = {
       double: 24,
     },
 
-    borderRadius: 7,
+    borderRadius: 8,
   },
 };
 

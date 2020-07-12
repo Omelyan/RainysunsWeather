@@ -19,7 +19,8 @@ const statusBarHeight = StatusBar.currentHeight;
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    marginTop: statusBarHeight,
+    borderTopWidth: statusBarHeight,
+    borderColor: theme.colors.primary.default,
     backgroundColor: theme.colors.backgroundColor,
   },
 });
@@ -119,6 +120,7 @@ export default class WeatherScreen extends React.PureComponent {
 
     return (
       <View style={styles.screenContainer}>
+
         <PlacesSearch
           apiKey={googleMapsAPIKey}
           language={language}
@@ -126,7 +128,9 @@ export default class WeatherScreen extends React.PureComponent {
           onPlaceSelected={this.onPlaceSelected}
           inputRef={this.searchInputRef}
         />
+
         <ForecastView title={placeTitle} text={text} data={daily} />
+
       </View>
     );
   }

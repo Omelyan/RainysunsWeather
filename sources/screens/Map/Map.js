@@ -56,17 +56,43 @@ export default class MapScreen extends React.PureComponent {
       metricValue: 0,
     };
 
+    this.map = React.createRef();
     this.marker = React.createRef();
 
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     this.onPress = this.onPress.bind(this);
     this.onLongPress = this.onLongPress.bind(this);
     this.setMarker = this.setMarker.bind(this);
     this.setRegion = this.setRegion.bind(this);
+    this.moveToRegion = this.moveToRegion.bind(this);
+    this.moveMarkerTo = this.moveMarkerTo.bind(this);
+    this.tabPress = this.tabPress.bind(this);
   }
 
   componentDidMount() {
+    const { navigation } = this.props;
+
     getLocationPermissions(() => this.getToLocation());
+
+    this.unsubscribeFocusEvent = navigation.addListener('focus', this.onFocus);
+    this.unsubscribeBlurEvent = navigation.addListener('blur', this.onBlur);
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFocusEvent();
+    this.unsubscribeBlurEvent();
+  }
+
+  onFocus() {
+    const { navigation } = this.props;
+
+    this.unsubscribeTabPress = navigation.addListener('tabPress', this.tabPress);
+  }
+
+  onBlur() {
+    this.unsubscribeTabPress();
   }
 
   onRegionChangeComplete(region) {
@@ -134,11 +160,11 @@ export default class MapScreen extends React.PureComponent {
         const { latitude, longitude } = position.coords;
 
         setTimeout(
-          () => this.setRegion({
+          () => this.moveToRegion({
             latitude,
             longitude,
-            latitudeDelta: 8,
-            longitudeDelta: 8,
+            latitudeDelta: 7,
+            longitudeDelta: 7,
           }),
           1000,
         );
@@ -146,6 +172,10 @@ export default class MapScreen extends React.PureComponent {
       () => null,
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 },
     );
+  }
+
+  moveToRegion(region) {
+    this.map.current.animateToRegion(region, animationOptions.duration.long);
   }
 
   moveMarkerTo(coordinate) {
@@ -160,6 +190,11 @@ export default class MapScreen extends React.PureComponent {
       },
       animationOptions.duration.default,
     );
+  }
+
+  tabPress() {
+    this.setMarker();
+    this.moveToRegion(defaultRegion);
   }
 
   navigateToWeekForecast(key, placeTitle) {
@@ -180,10 +215,11 @@ export default class MapScreen extends React.PureComponent {
 
     return (
       <>
-        <StatusBar translucent barStyle="dark-content" backgroundColor={theme.colors.lightTint} />
+        <StatusBar translucent barStyle="dark-content" backgroundColor={theme.colors.primary.lightTint} />
         <View style={styles.mapContainer}>
 
           <MapView
+            ref={this.map}
             style={styles.map}
             region={region}
             customMapStyle={defaultMapStyle}
@@ -196,7 +232,7 @@ export default class MapScreen extends React.PureComponent {
               <Marker.Animated
                 ref={this.marker}
                 coordinate={markerCoordinate}
-                pinColor={theme.colors.pinColor}
+                pinColor={theme.colors.accent.default}
               >
                 {/* Popup */}
                 <Callout
