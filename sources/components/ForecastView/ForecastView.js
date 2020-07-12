@@ -118,12 +118,6 @@ export default class ForecastView extends React.PureComponent {
     );
   }
 
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
   render() {
     const {
       title,

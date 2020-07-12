@@ -9,7 +9,7 @@ import {
 import MapView, { Marker, Callout, AnimatedRegion } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 
-import { WeatherPopup } from '../../components';
+import { WeatherPopup, Hint } from '../../components';
 
 import { getNearbyPlaceByGeoposition, getCurrentConditions } from '../../services/weather';
 import { defaultRegion, animationOptions, theme } from '../../assets/options';
@@ -244,6 +244,8 @@ export default class MapScreen extends React.PureComponent {
               </Marker.Animated>
             )}
           </MapView>
+
+          {markerCoordinate === null && (<Hint text="long press to set marker" />)}
 
         </View>
       </>

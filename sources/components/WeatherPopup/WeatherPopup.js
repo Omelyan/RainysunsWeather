@@ -43,12 +43,6 @@ const styles = StyleSheet.create({
 });
 
 export default class WeatherPopup extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
   render() {
     const {
       title,

@@ -29,12 +29,12 @@ export const theme = {
         default: '#222',
         dimmed: '#00000050',
         light: '#00000020',
-        accent1: '#1DBAF5',
+        accent1: '#17B3EB',
       },
     },
 
     secondary: {
-      default: '#F2955E',
+      default: '#F4A93E',
       text: {
         default: 'white',
         dimmed: '#ffffff90',
@@ -76,10 +76,10 @@ export const locales = 'en-US';
 export const predefinedPlaces = [
   {
     description: 'Kyiv',
-    geometry: { location: { lat: 50.4501, lng: 30.5234 } },
+    geometry: { location: { lat: 50.45, lng: 30.52 } },
   },
   {
     description: 'Odessa',
-    geometry: { location: { lat: 46.482526, lng: 30.7233095 } },
+    geometry: { location: { lat: 46.48, lng: 30.72 } },
   },
 ];

@@ -39,10 +39,12 @@ export default function App() {
 
   return (
     <NavigationContainer>
+
       <Tab.Navigator initialRouteName="Map" tabBarOptions={tabBarOptions}>
         <Tab.Screen name="Map" component={MapScreen} />
         <Tab.Screen name="Weather forecast" component={WeatherScreen} initialParams={{}} />
       </Tab.Navigator>
+
     </NavigationContainer>
   );
 }
