@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 
   title: {
     maxWidth: '67%',
-    marginRight: theme.layout.margin.large,
+    marginRight: theme.layout.margin.double,
   },
 
   caption: {
@@ -34,37 +34,38 @@ const styles = StyleSheet.create({
 
   itemContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: theme.layout.margin.default,
     paddingHorizontal: theme.layout.padding.default,
   },
 
   itemTitle: {
+    flex: 3,
     flexShrink: 1,
   },
 
   itemTemperatures: {
+    flex: 2,
     flexDirection: 'row',
   },
 
   normalText: {
     fontSize: theme.layout.fontSize.default,
-    color: theme.colors.text.default,
+    color: theme.colors.primary.text.default,
   },
 
   smallerText: {
     fontSize: theme.layout.fontSize.smaller,
-    color: theme.colors.text.dimmed,
+    color: theme.colors.primary.text.dimmed,
   },
 
   largerText: {
     fontSize: theme.layout.fontSize.larger,
-    color: theme.colors.text.default,
+    color: theme.colors.primary.text.default,
   },
 
   largeText: {
     fontSize: theme.layout.fontSize.large,
-    color: theme.colors.text.accent1,
+    color: theme.colors.primary.text.accent1,
   },
 
   shade: {
@@ -107,7 +108,7 @@ export default class ForecastView extends React.PureComponent {
             {/* temperatures */}
             <Text style={styles.largeText} numberOfLines={1}>
               {maxValue.toFixed()}
-              <Text style={{ color: theme.colors.text.light }}> / </Text>
+              <Text style={{ color: theme.colors.primary.text.light }}> / </Text>
               {minValue.toFixed()}
             </Text>
             {/* units */}

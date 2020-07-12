@@ -11,7 +11,7 @@ import Geolocation from 'react-native-geolocation-service';
 
 import { WeatherPopup } from '../../components';
 
-import { getNearbyPlaceByGeopositionDummy as getNearbyPlaceByGeoposition, getCurrentConditionsDummy as getCurrentConditions } from '../../services/weather';
+import { getNearbyPlaceByGeoposition, getCurrentConditions } from '../../services/weather';
 import { defaultRegion, animationOptions, theme } from '../../assets/options';
 import defaultMapStyle from './DefaultMapStyle.json';
 
@@ -78,10 +78,16 @@ export default class MapScreen extends React.PureComponent {
   }
 
   onLongPress(event) {
+    if (this.marker.current) {
+      this.marker.current.hideCallout();
+    }
+
     this.setMarker(event.nativeEvent.coordinate);
   }
 
   setMarker(coordinate) {
+    const hideCallout = () => (this.marker.current ? this.marker.current.hideCallout() : null);
+
     if (coordinate) {
       // show marker
       this.setState(
@@ -102,7 +108,10 @@ export default class MapScreen extends React.PureComponent {
             this.setState({ key, placeTitle });
             this.moveMarkerTo(nearbyPlaceCoordinate);
             getCurrentConditions(key)
-              .then(conditions => this.setState(conditions))
+              .then(conditions => this.setState(
+                conditions,
+                hideCallout, // react-native-maps callout redraw issue #486
+              ))
               .catch(() => null);
           }
         },
@@ -124,12 +133,15 @@ export default class MapScreen extends React.PureComponent {
       (position) => {
         const { latitude, longitude } = position.coords;
 
-        this.setRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 8,
-          longitudeDelta: 8,
-        });
+        setTimeout(
+          () => this.setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 8,
+            longitudeDelta: 8,
+          }),
+          1000,
+        );
       },
       () => null,
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 },
@@ -187,15 +199,12 @@ export default class MapScreen extends React.PureComponent {
                 pinColor={theme.colors.pinColor}
               >
                 {/* Popup */}
-                {key !== null && (
-                  <Callout
-                    alphaHitTest
-                    tooltip
-                    onPress={() => this.navigateToWeekForecast(key, placeTitle)}
-                  >
-                    <WeatherPopup title={placeTitle} mood={currentMood} value={metricValue} />
-                  </Callout>
-                )}
+                <Callout
+                  tooltip
+                  onPress={() => this.navigateToWeekForecast(key, placeTitle)}
+                >
+                  <WeatherPopup title={placeTitle} mood={currentMood} value={metricValue} />
+                </Callout>
               </Marker.Animated>
             )}
           </MapView>

@@ -30,8 +30,8 @@ const tabBarOptions = {
     padding: theme.layout.padding.narrow,
   },
 
-  activeTintColor: theme.colors.text.accent1,
-  inactiveTintColor: theme.colors.text.dimmed,
+  activeTintColor: theme.colors.primary.text.accent1,
+  inactiveTintColor: theme.colors.primary.text.dimmed,
 };
 
 export default function App() {

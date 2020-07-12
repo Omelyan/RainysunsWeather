@@ -1,26 +1,27 @@
 import { accuweatherURL, accuweatherAPIKey } from '../assets/options';
 
-export async function getNearbyPlaceByGeopositionDummy() {
+export async function getNearbyPlaceByGeoposition() {
   return new Promise(resolve => setTimeout(() => resolve(
     {
       key: 32,
       // placeTitle: 'Kyiv the capital of Ukraine, Kyivska oblast',
-      placeTitle: 'Odessa',
+      placeTitle: ['Odessa', 'Kyiv'][Math.random().toFixed()],
       coordinate: {
         latitude: 50,
         longitude: 31,
       },
     },
-  ), 1000));
+  ), 300));
 }
 
-export async function getCurrentConditionsDummy() {
+export async function getCurrentConditions() {
   return new Promise(resolve => setTimeout(() => resolve(
     {
-      currentMood: 'sunshine',
-      metricValue: 35,
+      // currentMood: 'sunshine rainy day with storms and freez',
+      currentMood: 'sunshine rainy',
+      metricValue: (10 * Math.random()).toFixed(),
     },
-  ), 1000));
+  ), 300));
 }
 
 const dummy = [
@@ -59,7 +60,7 @@ const dummy = [
     EpochDate: 1594526400,
     Temperature: {
       Minimum: {
-        Value: 11.8,
+        Value: Math.random() * 10,
         Unit: 'C',
         UnitType: 17,
       },
@@ -182,74 +183,74 @@ const dummy = [
   },
 ];
 
-export async function getWeekForecastsDummy() {
+export async function getWeekForecasts() {
   return new Promise(resolve => setTimeout(() => resolve(
     {
       text: 'sweety rainy days, and the sun is broken.',
       daily: dummy,
     },
-  ), 1000));
+  ), 500));
 }
 
-export async function getNearbyPlaceByGeoposition(coordinate) {
-  try {
-    const response = await fetch(`${accuweatherURL}/locations/v1/cities/geoposition/search?apikey=${accuweatherAPIKey}&q=${coordinate.latitude},${coordinate.longitude}&toplevel=true`);
-    const data = await response.json();
-    const {
-      Key: key,
-      LocalizedName: placeTitle,
-      GeoPosition: {
-        Latitude: latitude = coordinate.latitude,
-        Longitude: longitude = coordinate.longitude,
-      } = {},
-    } = data;
+// export async function getNearbyPlaceByGeoposition(coordinate) {
+//   try {
+//     const response = await fetch(`${accuweatherURL}/locations/v1/cities/geoposition/search?apikey=${accuweatherAPIKey}&q=${coordinate.latitude},${coordinate.longitude}&toplevel=true`);
+//     const data = await response.json();
+//     const {
+//       Key: key,
+//       LocalizedName: placeTitle,
+//       GeoPosition: {
+//         Latitude: latitude = coordinate.latitude,
+//         Longitude: longitude = coordinate.longitude,
+//       } = {},
+//     } = data;
 
-    return {
-      key,
-      placeTitle,
-      coordinate: {
-        latitude,
-        longitude,
-      },
-    };
-  } catch (error) {
-    return null;
-  }
-}
+//     return {
+//       key,
+//       placeTitle,
+//       coordinate: {
+//         latitude,
+//         longitude,
+//       },
+//     };
+//   } catch (error) {
+//     return null;
+//   }
+// }
 
-export async function getCurrentConditions(key) {
-  try {
-    const response = await fetch(`${accuweatherURL}/currentconditions/v1/${key}?apikey=${accuweatherAPIKey}`);
-    const data = await response.json();
-    const {
-      WeatherText: currentMood,
-      Temperature: {
-        Metric: {
-          Value: metricValue,
-        } = {},
-      } = {},
-    } = data[0] || {};
+// export async function getCurrentConditions(key) {
+//   try {
+//     const response = await fetch(`${accuweatherURL}/currentconditions/v1/${key}?apikey=${accuweatherAPIKey}`);
+//     const data = await response.json();
+//     const {
+//       WeatherText: currentMood,
+//       Temperature: {
+//         Metric: {
+//           Value: metricValue,
+//         } = {},
+//       } = {},
+//     } = data[0] || {};
 
-    return {
-      currentMood,
-      metricValue,
-    };
-  } catch (error) {
-    return null;
-  }
-}
+//     return {
+//       currentMood,
+//       metricValue,
+//     };
+//   } catch (error) {
+//     return null;
+//   }
+// }
 
-export async function getWeekForecasts(key) {
-  try {
-    const response = await fetch(`${accuweatherURL}/forecasts/v1/daily/5day/${key}?apikey=${accuweatherAPIKey}&metric=true`);
-    const data = await response.json();
-    const {
-      Headline: { Text: text } = {},
-      DailyForecasts: daily = [],
-    } = data;
+// export async function getWeekForecasts(key) {
+//   try {
+//     const response = await fetch(`${accuweatherURL}/forecasts/v1/daily/5day/${key}?apikey=${accuweatherAPIKey}&metric=true`);
+//     const data = await response.json();
+//     const {
+//       Headline: { Text: text } = {},
+//       DailyForecasts: daily = [],
+//     } = data;
 
-    return { text, daily };
-  } catch (error) {
-    return null;
-  }
-}
+//     return { text, daily };
+//   } catch (error) {
+//     return null;
+//   }
+// }

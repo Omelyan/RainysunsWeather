@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 import { PlacesSearch, ForecastView } from '../../components';
-import { getNearbyPlaceByGeopositionDummy as getNearbyPlaceByGeoposition, getWeekForecastsDummy as getWeekForecasts } from '../../services/weather';
+import { getNearbyPlaceByGeoposition, getWeekForecasts } from '../../services/weather';
 import {
   theme,
   googleMapsAPIKey,
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
 });
 
 const initialState = () => ({
-  key: null,
   placeTitle: '',
   text: '',
   daily: [],
@@ -37,10 +36,14 @@ export default class WeatherScreen extends React.PureComponent {
 
     this.state = initialState();
 
+    this.searchInputRef = React.createRef();
+
     this.onFocus = this.onFocus.bind(this);
     this.onBlur = this.onBlur.bind(this);
     this.onPlaceSelected = this.onPlaceSelected.bind(this);
     this.updateWeatherForecasts = this.updateWeatherForecasts.bind(this);
+    this.focusToSearchInput = this.focusToSearchInput.bind(this);
+    this.tabPress = this.tabPress.bind(this);
   }
 
   componentDidMount() {
@@ -48,16 +51,25 @@ export default class WeatherScreen extends React.PureComponent {
 
     this.unsubscribeFocusEvent = navigation.addListener('focus', this.onFocus);
     this.unsubscribeBlurEvent = navigation.addListener('blur', this.onBlur);
+    this.unsubscribeTabPress = navigation.addListener('tabPress', this.tabPress);
   }
 
   componentWillUnmount() {
     this.unsubscribeFocusEvent();
     this.unsubscribeBlurEvent();
+    this.unsubscribeTabPress();
   }
 
   onFocus() {
     const { route } = this.props;
-    console.log(route);
+    const { key, placeTitle } = route.params;
+
+    if (key) {
+      this.setState({ ...initialState(), placeTitle });
+      this.updateWeatherForecasts(key);
+    } else {
+      this.focusToSearchInput();
+    }
   }
 
   onBlur() {
@@ -75,10 +87,21 @@ export default class WeatherScreen extends React.PureComponent {
       const { key, placeTitle } = nearbyPlace;
 
       this.setState(
-        { key, placeTitle },
+        { placeTitle },
         () => this.updateWeatherForecasts(key),
       );
     }
+  }
+
+  focusToSearchInput() {
+    if (this.searchInputRef.current) {
+      this.searchInputRef.current.focus();
+      this.searchInputRef.current.clear();
+    }
+  }
+
+  tabPress() {
+    this.focusToSearchInput();
   }
 
   async updateWeatherForecasts(key) {
@@ -101,6 +124,7 @@ export default class WeatherScreen extends React.PureComponent {
           language={language}
           predefinedPlaces={predefinedPlaces}
           onPlaceSelected={this.onPlaceSelected}
+          inputRef={this.searchInputRef}
         />
         <ForecastView title={placeTitle} text={text} data={daily} />
       </View>

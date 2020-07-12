@@ -21,7 +21,7 @@ const searchComponentStyles = {
   textInput: {
     padding: 0,
     fontSize: theme.layout.fontSize.default,
-    color: theme.colors.text.default,
+    color: theme.colors.primary.text.default,
   },
 
   listView: {
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
   rowText: {
     fontSize: theme.layout.fontSize.smaller,
-    color: theme.colors.text.default,
+    color: theme.colors.primary.text.default,
   },
 });
 
@@ -78,10 +78,14 @@ export default class PlacesSearch extends React.PureComponent {
       apiKey,
       language,
       predefinedPlaces,
+      inputRef,
     } = this.props;
 
     return (
       <GooglePlacesAutocomplete
+        textInputProps={{
+          ref: inputRef,
+        }}
         placeholder="Search places..."
         onPress={this.querySelected}
         query={{ key: apiKey, language }}
@@ -98,7 +102,7 @@ export default class PlacesSearch extends React.PureComponent {
         renderRow={PlacesSearch.Row}
         styles={searchComponentStyles}
         suppressDefaultStyles
-        placeholderTextColor={theme.colors.text.dimmed}
+        placeholderTextColor={theme.colors.primary.text.dimmed}
       />
     );
   }

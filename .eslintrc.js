@@ -18,5 +18,6 @@ module.exports = {
     'react/prop-types': ['warn', { skipUndeclared: true }],
     'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
     'dot-notation': ['error', { allowPattern: '^[A-Z][A-Za-z_]+' }],
+    'max-len': ['warn', { code: 120, ignoreComments: true }],
   },
 };
