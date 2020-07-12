@@ -1,20 +1,23 @@
 import React from 'react';
 import {
+  StatusBar,
   StyleSheet,
   View,
   PermissionsAndroid,
 } from 'react-native';
 
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Callout, AnimatedRegion } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 
-import { getNearbyPlaceByGeoposition, getCurrentConditions } from '../../services/weather';
+import { WeatherPopup } from '../../components';
+
+import { getNearbyPlaceByGeopositionDummy as getNearbyPlaceByGeoposition, getCurrentConditionsDummy as getCurrentConditions } from '../../services/weather';
+import { defaultRegion, animationOptions, theme } from '../../assets/options';
 import defaultMapStyle from './DefaultMapStyle.json';
 
 const styles = StyleSheet.create({
-  container: {
+  mapContainer: {
     flex: 1,
-    backgroundColor: 'white',
   },
 
   map: {
@@ -45,20 +48,15 @@ export default class MapScreen extends React.PureComponent {
     super(props);
 
     this.state = {
-      region: {
-        latitude: 25,
-        longitude: 25,
-        latitudeDelta: 60,
-        longitudeDelta: 60,
-      },
-
-      markerIsVisible: false,
-      markerCoordinates: null,
-
-      localName: '',
-      weatherText: '',
+      region: defaultRegion,
+      markerCoordinate: null,
+      key: null,
+      placeTitle: '',
+      currentMood: '',
       metricValue: 0,
     };
+
+    this.marker = React.createRef();
 
     this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     this.onPress = this.onPress.bind(this);
@@ -83,30 +81,37 @@ export default class MapScreen extends React.PureComponent {
     this.setMarker(event.nativeEvent.coordinate);
   }
 
-  async setMarker(coordinate) {
+  setMarker(coordinate) {
     if (coordinate) {
-      this.setState({ markerIsVisible: true, markerCoordinates: coordinate });
+      // show marker
+      this.setState(
+        {
+          markerCoordinate: new AnimatedRegion({
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            latitudeDelta: 0,
+            longitudeDelta: 0,
+          }),
+        },
+        async () => {
+          const nearbyPlace = await getNearbyPlaceByGeoposition(coordinate);
 
-      const nearbyPlace = await getNearbyPlaceByGeoposition(coordinate);
-      if (nearbyPlace) {
-        const {
-          key,
-          localName,
-          coordinate: nearbyPlaceCoordinate,
-        } = nearbyPlace;
+          if (nearbyPlace) {
+            const { key, placeTitle, coordinate: nearbyPlaceCoordinate } = nearbyPlace;
 
-        this.setState({
-          markerCoordinates: nearbyPlaceCoordinate,
-          localName,
-        });
-
-        const currentConditions = await getCurrentConditions(key);
-        if (currentConditions) {
-          this.setState(currentConditions);
-        }
-      }
+            this.setState({ key, placeTitle });
+            this.moveMarkerTo(nearbyPlaceCoordinate);
+            getCurrentConditions(key)
+              .then(conditions => this.setState(conditions))
+              .catch(() => null);
+          }
+        },
+      );
     } else {
-      this.setState({ markerIsVisible: false });
+      // remove marker
+      this.setState({
+        markerCoordinate: null,
+      });
     }
   }
 
@@ -131,35 +136,72 @@ export default class MapScreen extends React.PureComponent {
     );
   }
 
+  moveMarkerTo(coordinate) {
+    const { markerCoordinate } = this.state;
+
+    if (markerCoordinate === null) return;
+
+    this.marker.current.animateMarkerToCoordinate(
+      {
+        latitude: coordinate.latitude,
+        longitude: coordinate.longitude,
+      },
+      animationOptions.duration.default,
+    );
+  }
+
+  navigateToWeekForecast(key, placeTitle) {
+    const { navigation } = this.props;
+
+    navigation.navigate('Weather forecast', { key, placeTitle });
+  }
+
   render() {
     const {
       region,
-      markerIsVisible,
-      markerCoordinates,
-      localName,
-      weatherText,
+      markerCoordinate,
+      key,
+      placeTitle,
+      currentMood,
       metricValue,
     } = this.state;
 
     return (
-      <View style={styles.container}>
-        <MapView
-          style={styles.map}
-          region={region}
-          customMapStyle={defaultMapStyle}
-          onRegionChangeComplete={this.onRegionChangeComplete}
-          onPress={this.onPress}
-          onLongPress={this.onLongPress}
-        >
-          {markerIsVisible && (
-            <Marker
-              coordinate={markerCoordinates}
-              title={localName}
-              description={`${weatherText}: ${metricValue}C`}
-            />
-          )}
-        </MapView>
-      </View>
+      <>
+        <StatusBar translucent barStyle="dark-content" backgroundColor={theme.colors.lightTint} />
+        <View style={styles.mapContainer}>
+
+          <MapView
+            style={styles.map}
+            region={region}
+            customMapStyle={defaultMapStyle}
+            onRegionChangeComplete={this.onRegionChangeComplete}
+            onPress={this.onPress}
+            onLongPress={this.onLongPress}
+          >
+            {/* Marker */}
+            {markerCoordinate !== null && (
+              <Marker.Animated
+                ref={this.marker}
+                coordinate={markerCoordinate}
+                pinColor={theme.colors.pinColor}
+              >
+                {/* Popup */}
+                {key !== null && (
+                  <Callout
+                    alphaHitTest
+                    tooltip
+                    onPress={() => this.navigateToWeekForecast(key, placeTitle)}
+                  >
+                    <WeatherPopup title={placeTitle} mood={currentMood} value={metricValue} />
+                  </Callout>
+                )}
+              </Marker.Animated>
+            )}
+          </MapView>
+
+        </View>
+      </>
     );
   }
 }

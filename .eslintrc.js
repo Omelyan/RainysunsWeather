@@ -15,6 +15,8 @@ module.exports = {
   ],
   rules: {
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
+    'react/prop-types': ['warn', { skipUndeclared: true }],
     'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
+    'dot-notation': ['error', { allowPattern: '^[A-Z][A-Za-z_]+' }],
   },
 };
